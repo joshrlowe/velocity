@@ -1,9 +1,7 @@
 # Architecture
 
-Short map of the Velocity monorepo on `v2`. Deeper rules live in
-[`CLAUDE.md`](../CLAUDE.md). Production hosting versus the v1 tree is the
-[README](../README.md). Cutover steps stay in the runbooks and are not
-repeated here.
+Short map of the Velocity monorepo. Deeper rules live in
+[`CLAUDE.md`](../CLAUDE.md). Hosting and DNS ownership are in the [README](../README.md).
 
 ## Layout
 
