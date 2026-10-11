@@ -1,8 +1,8 @@
-# Project: jlowe.ai 2.0 ("Velocity")
+# Project: Velocity
 
-Rebuild of jlowe.ai into a game-quality 3D explorable journey with a Bedrock-powered AI digital twin. The root package name is `velocity`; the GitHub repo and the public hostname stay `jlowe.ai`. Work proceeds in phases on the long-lived `v2` branch. Phases 0–1 (2D shell + infra, 3D renderer foundation) live in this repo. The Chapter 1 driving circuit was extracted to `joshrlowe/jlowe-world`. What remains under `apps/web/src/components/world/` is the renderer shell (transit hold, fixture scene, HUD/FSM with an empty chapter registry). `tools/cinematic/` is the local Blender hero pipeline and stays here. See `docs/architecture.md`.
+Velocity: a game-quality 3D portfolio experiment with a Bedrock-powered AI digital twin, originally the `v2` rebuild of jlowe.ai and spun out into `joshrlowe/velocity` in 2026-10. The root package name is `velocity`. jlowe.ai itself serves the v1 site from `joshrlowe/jlowe.ai` on Vercel. The Chapter 1 driving circuit lives in `joshrlowe/jlowe-world`. What remains under `apps/web/src/components/world/` is the renderer shell (transit hold, fixture scene, HUD/FSM with an empty chapter registry). `tools/cinematic/` is the local Blender hero pipeline and stays here. See `docs/architecture.md`.
 
-> **Production truth (re-check with `curl` before touching DNS).** `main` and `v2` are different applications, not a feature branch. `origin/main` (`cb45fe4`) is still the v1 tree (Pages Router, Prisma, Vercel project). A 2026-09-28 request found `https://jlowe.ai` serving the Velocity flat shell from CloudFront/S3, `https://www.jlowe.ai` 301ing to the apex, and `https://jlowe-ai.vercel.app` still serving v1 (`server: Vercel`, noindex). That apex response is not permission to merge, flip `CUTOVER_ENABLED`, change DNS, or delete the v1 tree. Runbooks: `docs/runbooks/cutover.md`, `docs/runbooks/stage-5-collapse.md`. The Stage 5 "verified 2026-08-24" SHA table is stale. Full write-up: `README.md`.
+> **DNS ownership.** This repo's Terraform still owns the Route53 `jlowe.ai` zone. Prod sets `apex_external_ipv4` so the apex and `www` point at Vercel (the v1 site); Velocity previews at `https://dev.jlowe.ai`. Never apply a prod plan here that moves the apex back to CloudFront unless asked to. Re-check with `curl` before touching DNS.
 
 ## Standing rules
 
@@ -15,7 +15,7 @@ Rebuild of jlowe.ai into a game-quality 3D explorable journey with a Bedrock-pow
 - Infra is Terraform-only; never create AWS resources by hand or with raw AWS CLI mutations. Local terraform: fmt/validate/plan only. Applies happen in CI (gated GitHub environments). Documented one-time exceptions: `infra/terraform/bootstrap/bootstrap.sh` and the first local apply of the `global` stack (it creates the roles CI assumes).
 - Verify external facts before hardcoding: Bedrock model IDs / inference profiles, S3 Vectors regional availability, three.js WebGPU API names. Check docs or run read-only AWS CLI describe/list commands instead of guessing.
 - No copyrighted game/film IP: original assets only; the lava world is an original volcanic planet, not any specific franchise location.
-- Conventional commits; small PRs per feature (base: `v2`); every PR description lists acceptance checks run.
+- Conventional commits; small PRs per feature (base: `main`); every PR description lists acceptance checks run.
 
 ## Layout
 

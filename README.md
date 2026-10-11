@@ -1,59 +1,24 @@
-# jlowe.ai — Velocity (`v2`)
+# Velocity
 
-Personal site of Josh Lowe, rebuilt as a game-quality 3D explorable journey
-with a Bedrock-powered AI digital twin. This branch is the **Velocity**
-monorepo. The root npm package is named `velocity`; workspace packages are
-`@velocity/*`. The GitHub repository and the public hostname stay `jlowe.ai`.
+A game-quality 3D take on a personal portfolio, with a Bedrock-powered AI
+digital twin. Designed and built by Josh Lowe as the `v2` rebuild of
+jlowe.ai, then spun out into this repo in 2026-10 when jlowe.ai went back to
+the v1 site. The root npm package is `velocity`; workspace packages are
+`@velocity/*`.
 
-## Production truth
+## Where things live
 
-`main` and `v2` are two applications that diverged after an old merge-base
-(`cb86323`, 2026-05-15). They are not a normal feature branch of each other.
-**Branch collapse is not done.** `origin/main` is still the v1 tree
-(`cb45fe4`). Do not merge this tree into `main`, force-push either branch,
-flip `CUTOVER_ENABLED`, change DNS, or delete the v1 tree.
+| Surface                     | What it is                                                                                                                                                                                               |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `joshrlowe/velocity` (here) | This monorepo. `main` is the Velocity tree (history carried over from `joshrlowe/jlowe.ai` branch `v2`).                                                                                                 |
+| `joshrlowe/jlowe.ai`        | The v1 site (Pages Router, Prisma, Vercel). Serves `https://jlowe.ai`.                                                                                                                                   |
+| `joshrlowe/jlowe-world`     | The Chapter 1 driving circuit, extracted from this tree on 2026-07-27.                                                                                                                                   |
+| `https://dev.jlowe.ai`      | Velocity preview (CloudFront/S3, `X-Robots-Tag: noindex`).                                                                                                                                               |
+| `infra/terraform` (here)    | Still owns the Route53 `jlowe.ai` zone, the CI roles, and `jlowe-ai-vercel-v1` (the v1 site's Bedrock role, `global/vercel.tf`). In prod, `apex_external_ipv4` points the apex and `www` at Vercel (v1). |
 
-Checked with `curl` on 2026-09-28 (re-check before acting on DNS):
-
-| Surface                       | What responded                                                                                                                                                          |
-| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `https://jlowe.ai`            | CloudFront → S3 (`server: AmazonS3`). HTML is the Velocity flat shell (title “Josh Lowe — AI Engineer & Consultant”, “Enter World”). Object `last-modified` 2026-08-24. |
-| `https://www.jlowe.ai`        | CloudFront function, `301` → `https://jlowe.ai/`.                                                                                                                       |
-| `https://jlowe-ai.vercel.app` | v1 Next.js site (`server: Vercel`, `x-powered-by: Next.js`, `x-robots-tag: noindex`). Title “Josh Lowe - AI/ML Engineer \| Portfolio”.                                  |
-| git `main`                    | v1 source (Pages Router, Prisma, Playwright). This is what the Vercel project builds.                                                                                   |
-| git `v2`                      | This monorepo. Source for the CloudFront artifact. Not merged into `main`.                                                                                              |
-
-An apex that already serves a Velocity export is **not** permission to finish
-cutover. Push-to-`main` deploys in `.github/workflows/deploy-*.yml` and
-`terraform.yml` stay gated on `vars.CUTOVER_ENABLED == 'true'`. This repo
-does not read or set that variable.
-
-Runbooks (the docs, not the switch):
-
-- [`docs/runbooks/cutover.md`](docs/runbooks/cutover.md) — Stage 4. Its
-  “current wiring” table still describes the apex A record as Vercel
-  `76.76.21.21`, which does not match the 2026-09-28 response above.
-- [`docs/runbooks/stage-5-collapse.md`](docs/runbooks/stage-5-collapse.md) —
-  Stage 5, collapsing `v2` into `main`. The 2026-08-24 SHA table is stale
-  (`origin/main` is `cb45fe4`, still v1). Do not execute it from a feature PR.
-- [`infra/terraform/bootstrap/README.md`](infra/terraform/bootstrap/README.md)
-  — how the AWS account, zone, and CI roles were created.
-
-`vercel.json` on this branch skips the Vercel build unless
-`VERCEL_GIT_COMMIT_REF` is `main` (Vercel treats exit 1 as “build”). After a
-naive merge, that would let the v1 Vercel project build this static export
-and replace the rollback origin. Leave the Vercel project alone.
-
-## What lives on which branch
-
-|                 | `main` (v1 source)                                    | `v2` (this tree)                                                                                                         |
-| --------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| App             | Next.js 15 Pages Router, npm, package name `jlowe.ai` | pnpm workspaces, Next.js 16 App Router static export, package name `velocity`                                            |
-| Content / admin | Prisma + Postgres, NextAuth, `/admin` CMS             | Markdown `corpus/` compiled to generated TypeScript. No Prisma, no admin CMS                                             |
-| Tests           | Jest, Playwright (`e2e/`)                             | Vitest. Live Bedrock probes behind `RUN_LIVE_EVAL=1`. Playwright is a follow-up                                          |
-| AI / contact    | In-process Bedrock, Inngest, Langfuse keys, Resend    | `services/chat` and `services/contact` Lambdas. Langfuse keys in SSM. SES v2                                             |
-| Hosting         | Vercel project tracking `main`                        | Terraform (`infra/terraform`) + CloudFront. Deploys are `workflow_dispatch` until cutover is explicitly armed            |
-| Repo hygiene    | `.env.example`, MIT `LICENSE`, Dependabot for npm     | `.env.example`, MIT `LICENSE`, Dependabot for the pnpm lockfile, `CODEOWNERS`, plus `LICENSES.md` for asset attributions |
+Because this repo's Terraform owns the `jlowe.ai` zone and the v1 site's
+Bedrock role, a `global` or `envs` prod apply from here can change what
+`jlowe.ai` serves or break its chat. Read the plan before approving.
 
 ## Workspace map
 
@@ -93,11 +58,11 @@ Chat and contact run in AWS, not in `pnpm dev`.
 
 ## Branch and deploy model
 
-- Feature PRs target **`v2`**. `main` keeps shipping the v1 Vercel project
-  until a human executes the runbooks above.
+- Feature PRs target **`main`**.
 - Web, chat, and contact deploys: `workflow_dispatch` on
   `.github/workflows/deploy-web.yml`, `deploy-chat.yml`, `deploy-contact.yml`
-  (dev or prod, with GitHub environment gates).
+  (dev or prod, with GitHub environment gates). Push-to-`main` deploys stay
+  off while `vars.CUTOVER_ENABLED` is `false`.
 - Terraform plan runs on infra PRs; apply is a gated `workflow_dispatch`.
   Local Terraform is fmt / validate / plan only.
 - `dev.jlowe.ai` is the Velocity preview host (`X-Robots-Tag: noindex` from
@@ -124,6 +89,7 @@ Do not move those trees across repos in a hygiene PR.
 
 ## Further reading
 
+- [`docs/runbooks/cutover.md`](docs/runbooks/cutover.md) — historical: how the apex moved to CloudFront in 2026-07
 - [`docs/architecture.md`](docs/architecture.md) — how web, chat, contact, and corpus fit together
 - [`CLAUDE.md`](CLAUDE.md) — agent-facing standing rules
 - [`LICENSES.md`](LICENSES.md) — third-party asset attributions (separate from the MIT `LICENSE`)

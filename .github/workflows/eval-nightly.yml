@@ -13,8 +13,8 @@ permissions:
 jobs:
   tier12:
     name: credential-free retrieval + grounding
-    # Schedule only fires from the default branch. Until cutover that is v1
-    # `main`, so skip cron there; workflow_dispatch --ref v2 still runs.
+    # Live evals cost Bedrock tokens, so cron stays off until CUTOVER_ENABLED;
+    # workflow_dispatch still runs.
     if: github.event_name == 'workflow_dispatch' || vars.CUTOVER_ENABLED == 'true'
     runs-on: ubuntu-latest
     steps:
