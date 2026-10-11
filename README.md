@@ -8,17 +8,17 @@ the v1 site. The root npm package is `velocity`; workspace packages are
 
 ## Where things live
 
-| Surface                     | What it is                                                                                                                       |
-| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `joshrlowe/velocity` (here) | This monorepo. `main` is the Velocity tree (history carried over from `joshrlowe/jlowe.ai` branch `v2`).                         |
-| `joshrlowe/jlowe.ai`        | The v1 site (Pages Router, Prisma, Vercel). Serves `https://jlowe.ai`.                                                           |
-| `joshrlowe/jlowe-world`     | The Chapter 1 driving circuit, extracted from this tree on 2026-07-27.                                                           |
-| `https://dev.jlowe.ai`      | Velocity preview (CloudFront/S3, `X-Robots-Tag: noindex`).                                                                       |
-| `infra/terraform` (here)    | Still owns the Route53 `jlowe.ai` zone and the CI roles. In prod, `apex_external_ipv4` points the apex and `www` at Vercel (v1). |
+| Surface                     | What it is                                                                                                                                                                                               |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `joshrlowe/velocity` (here) | This monorepo. `main` is the Velocity tree (history carried over from `joshrlowe/jlowe.ai` branch `v2`).                                                                                                 |
+| `joshrlowe/jlowe.ai`        | The v1 site (Pages Router, Prisma, Vercel). Serves `https://jlowe.ai`.                                                                                                                                   |
+| `joshrlowe/jlowe-world`     | The Chapter 1 driving circuit, extracted from this tree on 2026-07-27.                                                                                                                                   |
+| `https://dev.jlowe.ai`      | Velocity preview (CloudFront/S3, `X-Robots-Tag: noindex`).                                                                                                                                               |
+| `infra/terraform` (here)    | Still owns the Route53 `jlowe.ai` zone, the CI roles, and `jlowe-ai-vercel-v1` (the v1 site's Bedrock role, `global/vercel.tf`). In prod, `apex_external_ipv4` points the apex and `www` at Vercel (v1). |
 
-Because this repo's Terraform owns the `jlowe.ai` zone, a `global` or `envs`
-prod apply from here can change what `jlowe.ai` serves. Read the plan before
-approving.
+Because this repo's Terraform owns the `jlowe.ai` zone and the v1 site's
+Bedrock role, a `global` or `envs` prod apply from here can change what
+`jlowe.ai` serves or break its chat. Read the plan before approving.
 
 ## Workspace map
 
