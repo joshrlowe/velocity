@@ -17,7 +17,7 @@
     "vitest": "^4.1.0"
   },
   "dependencies": {
-    "@aws-sdk/client-sesv2": "^3.1068.0",
+    "@aws-sdk/client-sesv2": "^3.1148.0",
     "zod": "^3.25.76"
   }
 }
