@@ -5,7 +5,12 @@ variable "aws_account_id" {
 }
 
 variable "github_repos" {
-  description = "owner/name of the GitHub repos allowed to assume the CI roles"
+  description = <<-EOT
+    GitHub repos allowed to assume the CI roles, written as the OIDC `sub`
+    claim prefix that follows "repo:". This repo issues immutable subjects
+    (owner@owner_id/name@repo_id); check a repo's prefix with
+    `gh api repos/OWNER/NAME/actions/oidc/customization/sub`.
+  EOT
   type        = list(string)
-  default     = ["joshrlowe/velocity"]
+  default     = ["joshrlowe@89754639/velocity@1406039318"]
 }
