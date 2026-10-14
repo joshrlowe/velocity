@@ -6,10 +6,11 @@ variable "aws_account_id" {
 
 variable "github_repos" {
   description = <<-EOT
-    owner/name of the GitHub repos allowed to assume the CI roles. Both repos
-    are trusted while Velocity moves from joshrlowe/jlowe.ai (v2 branch) to
-    joshrlowe/velocity; drop jlowe.ai once velocity has run a plan and apply.
+    GitHub repos allowed to assume the CI roles, written as the OIDC `sub`
+    claim prefix that follows "repo:". This repo issues immutable subjects
+    (owner@owner_id/name@repo_id); check a repo's prefix with
+    `gh api repos/OWNER/NAME/actions/oidc/customization/sub`.
   EOT
   type        = list(string)
-  default     = ["joshrlowe/jlowe.ai", "joshrlowe/velocity"]
+  default     = ["joshrlowe@89754639/velocity@1406039318"]
 }

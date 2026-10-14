@@ -620,7 +620,7 @@ data "aws_iam_policy_document" "terraform_plan_trust" {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
       values = flatten([
-        for r in local.repos : ["repo:${r}:pull_request", "repo:${r}:ref:refs/heads/v2", "repo:${r}:ref:refs/heads/main"]
+        for r in local.repos : ["repo:${r}:pull_request", "repo:${r}:ref:refs/heads/main"]
       ])
     }
   }
